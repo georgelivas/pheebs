@@ -1,4 +1,5 @@
 from imutils.video import VideoStream
+from get_similarity import get_similarity
 import numpy as np
 import cv2
 
@@ -17,22 +18,43 @@ out = cv2.VideoWriter(
 	15.,
 	(640, 480))
 
+old_frame = None
+old_boxes = None
+
 while (True):
 	frame = cap.read()
 	frame = cv2.resize(frame, (640, 480))
 
-	gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+	# gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
-	faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-	boxes, weights = hog.detectMultiScale(frame, winStride=(8, 8))
-	boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
+	# faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+	# boxes, weights = hog.detectMultiScale(frame, winStride=(8, 8))
+	# boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
 
-	for (x, y, w, h) in faces:
-		cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+	if old_frame is None or get_similarity(old_frame, frame) < 73:
 
-	for (xA, yA, xB, yB) in boxes:
-		cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
-		cv2.putText(frame, 'Unknown Person', (xA, yA-10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
+		gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+
+		faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+		boxes, weights = hog.detectMultiScale(frame, winStride=(8, 8))
+		boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
+
+		for (x, y, w, h) in faces:
+			cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+		for (xA, yA, xB, yB) in boxes:
+			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
+			cv2.putText(frame, 'Unknown Person', (xA, yA-10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
+
+		old_frame = frame
+		old_boxes = boxes
+	else:
+		for (x, y, w, h) in faces:
+			cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
+
+		for (xA, yA, xB, yB) in old_boxes:
+			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
+			cv2.putText(frame, 'Unknown Person', (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
 
 	out.write(frame.astype('uint8'))
 

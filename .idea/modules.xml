@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$USER_HOME$/Downloads/detect_how_similar_images_are/.idea/detect_how_similar_images_are.iml" filepath="$USER_HOME$/Downloads/detect_how_similar_images_are/.idea/detect_how_similar_images_are.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/humanDetection.iml" filepath="$PROJECT_DIR$/.idea/humanDetection.iml" />
     </modules>
   </component>
