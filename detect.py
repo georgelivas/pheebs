@@ -3,9 +3,14 @@ from get_similarity import get_similarity
 import numpy as np
 import cv2
 
+print(' __   ___       ___      \n'
+      '/__` |__  |    |__  |\\ |  /\\  \n'
+      '.__/ |___ |___ |___ | \\| /~~\\ \n')
+
 hog = cv2.HOGDescriptor()
 hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
-face_cascade = cv2.CascadeClassifier('/Users/georgelivas/PycharmProjects/humanDetection/haarcascade_frontalcatface_extended.xml')
+face_cascade = cv2.CascadeClassifier(
+	'/Users/georgelivas/PycharmProjects/humanDetection/haarcascade_frontalcatface_extended.xml')
 
 cv2.startWindowThread()
 
@@ -31,7 +36,7 @@ while (True):
 	# boxes, weights = hog.detectMultiScale(frame, winStride=(8, 8))
 	# boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
 
-	if old_frame is None or get_similarity(old_frame, frame) < 73:
+	if old_frame is None or get_similarity(old_frame, frame) < 75:
 
 		gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
 
@@ -44,21 +49,18 @@ while (True):
 
 		for (xA, yA, xB, yB) in boxes:
 			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
-			cv2.putText(frame, 'Unknown Person', (xA, yA-10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
+			cv2.putText(frame, 'Unknown Person', (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
 
 		old_frame = frame
 		old_boxes = boxes
 	else:
-		for (x, y, w, h) in faces:
-			cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
 		for (xA, yA, xB, yB) in old_boxes:
 			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
 			cv2.putText(frame, 'Unknown Person', (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
 
 	out.write(frame.astype('uint8'))
 
-	cv2.imshow('frame', frame)
+	cv2.imshow('Selena', frame)
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 

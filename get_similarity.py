@@ -4,14 +4,14 @@ import numpy as np
 
 def get_similarity(frame1, frame2):
     if frame1.shape == frame2.shape:
-        print("The images have same size and channels")
+        # print("The images have same size and channels")
         difference = cv2.subtract(frame1, frame2)
         b, g, r = cv2.split(difference)
 
-        if cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 and cv2.countNonZero(r) == 0:
-            print("The images are completely Equal")
-        else:
-            print("The images are NOT equal")
+        # if cv2.countNonZero(b) == 0 and cv2.countNonZero(g) == 0 and cv2.countNonZero(r) == 0:
+        #     print("The images are completely Equal")
+        # else:
+        #     print("The images are NOT equal")
 
     sift = cv2.xfeatures2d.SIFT_create()
     kp_1, desc_1 = sift.detectAndCompute(frame1, None)
@@ -35,9 +35,14 @@ def get_similarity(frame1, frame2):
     else:
         number_keypoints = len(kp_2)
 
-    print("Keypoints 1ST Image: " + str(len(kp_1)))
-    print("Keypoints 2ND Image: " + str(len(kp_2)))
-    print("GOOD Matches:" + str(len(good_points)))
-    print("How good it\'s the match: " + str(float(len(good_points)) / float(number_keypoints) * 100))
+    # print("Keypoints 1ST Image: " + str(len(kp_1)))
+    # print("Keypoints 2ND Image: " + str(len(kp_2)))
+    # print("GOOD Matches:" + str(len(good_points)))
+
+    print(
+        "Frame match: " + str(float(len(good_points)) / float(number_keypoints) * 100),
+        end="\r",
+        flush=True
+    )
 
     return float(len(good_points)) / float(number_keypoints) * 100
