@@ -26,7 +26,7 @@ out = cv2.VideoWriter(
 old_frame = None
 old_boxes = None
 
-while (True):
+while True:
 	frame = cap.read()
 	frame = cv2.resize(frame, (640, 480))
 
