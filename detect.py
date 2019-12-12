@@ -2,6 +2,7 @@ from imutils.video import VideoStream
 from get_similarity import get_similarity
 import numpy as np
 import cv2
+import time
 
 print(' __   ___       ___      \n'
       '/__` |__  |    |__  |\\ |  /\\  \n'
@@ -48,6 +49,10 @@ while True:
 			cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
 		for (xA, yA, xB, yB) in boxes:
+			croped = frame[yA:yB, xA:xB]
+			cv2.imwrite("./images/people/Image_" + str(time.time()) + ".jpg", croped)
+
+			cv2.imshow("cropped", croped)
 			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
 			cv2.putText(frame, 'Unknown Person', (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
 
