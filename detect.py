@@ -3,6 +3,7 @@ from get_similarity import get_similarity
 import numpy as np
 import cv2
 import time
+import os
 
 print(' __   ___       ___      \n'
       '/__` |__  |    |__  |\\ |  /\\  \n'
@@ -49,7 +50,16 @@ while True:
 			cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
 		for (xA, yA, xB, yB) in boxes:
-			croped = frame[yA:yB, xA:xB]
+			croped = frame[yA:yB, xA+10:xB-10]
+
+			for folder in os.listdir('dataset'):
+				for photo in os.listdir('dataset/' + folder):
+					print(folder + '/' + photo)
+
+					if 0 < get_similarity(croped, cv2.imread('dataset/' + folder + '/' + photo)):
+						print(folder)
+
+
 			cv2.imwrite("./images/people/Image_" + str(time.time()) + ".jpg", croped)
 
 			cv2.imshow("cropped", croped)
