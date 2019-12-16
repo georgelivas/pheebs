@@ -11,12 +11,12 @@ print(' __   ___       ___      \n'
 
 hog = cv2.HOGDescriptor()
 hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
-face_cascade = cv2.CascadeClassifier(
-	'/Users/georgelivas/PycharmProjects/humanDetection/haarcascade_frontalcatface_extended.xml')
+face_cascade = cv2.CascadeClassifier('/Users/georgelivas/PycharmProjects/humanDetection'
+                                     '/haarcascade_frontalcatface_extended.xml')
 
 cv2.startWindowThread()
 
-cap = VideoStream("rtsp://admin:admin1@10.10.240.27:554/11").start()
+cap = VideoStream('rtsp://admin:admin1@10.10.240.27:554/11').start()
 
 # the output will be written to output.avi
 out = cv2.VideoWriter(
@@ -50,20 +50,20 @@ while True:
 			cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
 
 		for (xA, yA, xB, yB) in boxes:
-			croped = frame[yA:yB, xA+10:xB-10]
+			cropped = frame[yA:yB, xA + 10:xB - 10]
 
 			name = 'Unknown Person'
 
 			for folder in os.listdir('dataset'):
 				for photo in os.listdir('dataset/' + folder):
 					print(folder + '/' + photo)
-					if 0 < get_similarity(croped, cv2.imread('dataset/' + folder + '/' + photo)):
+					if 0 < get_similarity(cropped, cv2.imread('dataset/' + folder + '/' + photo)):
 						name = folder
 						print(folder)
 
-			cv2.imwrite("./images/people/Image_" + str(time.time()) + ".jpg", frame)
+			cv2.imwrite('./images/people/Image_' + str(time.time()) + '.jpg', frame)
 
-			cv2.imshow("cropped", croped)
+			cv2.imshow("cropped", cropped)
 			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
 			cv2.putText(frame, name, (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
 
