@@ -30,6 +30,11 @@ def get_similarity(frame1, frame2):
 
     number_keypoints = 0
 
+    # result = cv2.drawMatches(frame1, kp_1, frame2, kp_2, good_points, None)
+    # cv2.imshow("result", result)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
     if len(kp_1) <= len(kp_2):
         number_keypoints = len(kp_1)
     else:
@@ -46,3 +51,8 @@ def get_similarity(frame1, frame2):
     )
 
     return float(len(good_points)) / float(number_keypoints) * 100
+
+
+# get_similarity(
+#     cv2.imread('/Users/georgelivas/PycharmProjects/humanDetection/dataset/George/Image_1576506072.4440908.jpg'),
+#     cv2.imread('/Users/georgelivas/PycharmProjects/humanDetection/dataset/George/Image_1576506389.119589.jpg'))

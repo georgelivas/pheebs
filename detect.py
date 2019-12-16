@@ -52,26 +52,27 @@ while True:
 		for (xA, yA, xB, yB) in boxes:
 			croped = frame[yA:yB, xA+10:xB-10]
 
+			name = 'Unknown Person'
+
 			for folder in os.listdir('dataset'):
 				for photo in os.listdir('dataset/' + folder):
 					print(folder + '/' + photo)
-
 					if 0 < get_similarity(croped, cv2.imread('dataset/' + folder + '/' + photo)):
+						name = folder
 						print(folder)
 
-
-			cv2.imwrite("./images/people/Image_" + str(time.time()) + ".jpg", croped)
+			cv2.imwrite("./images/people/Image_" + str(time.time()) + ".jpg", frame)
 
 			cv2.imshow("cropped", croped)
 			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
-			cv2.putText(frame, 'Unknown Person', (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
+			cv2.putText(frame, name, (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
 
 		old_frame = frame
 		old_boxes = boxes
 	else:
 		for (xA, yA, xB, yB) in old_boxes:
 			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
-			cv2.putText(frame, 'Unknown Person', (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 255), 2)
+			cv2.putText(frame, 'Unknown Person', (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 0, 0), 2)
 
 	out.write(frame.astype('uint8'))
 
