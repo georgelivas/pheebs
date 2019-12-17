@@ -63,7 +63,7 @@ while True:
 
 			cv2.imwrite('./images/people/Image_' + str(time.time()) + '.jpg', frame)
 
-			cv2.imshow("cropped", cropped)
+			cv2.imshow('cropped', cropped)
 			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
 			cv2.putText(frame, name, (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
 
