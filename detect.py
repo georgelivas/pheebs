@@ -43,6 +43,8 @@ while True:
 	net.setInput(blob)
 	detections = net.forward()
 
+	boxes = []
+
 	# loop over the detections
 	for i in np.arange(0, detections.shape[2]):
 		# extract the confidence (i.e., probability) associated
@@ -59,12 +61,26 @@ while True:
 				continue
 
 			box = detections[0, 0, i, 3:7] * np.array([W, H, W, H])
-			(startX, startY, endX, endY) = box.astype("int")
 
+			box_exists = False
+
+			for existing_box in boxes:
+				(startX, startY, endX, endY) = existing_box
+				(X, Y, X1, Y1) = box.astype("int")
+
+				if startX < X < endX or startX < X1 < endX:
+					box_exists = True
+
+			if box_exists:
+				print('double box prevented')
+				continue
+
+			boxes.append(box.astype("int"))
+
+			(startX, startY, endX, endY) = box.astype("int")
 			cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
-
-	cv2.imshow('Selena', frame)
+	cv2.imshow('Pheebs', frame)
 	if cv2.waitKey(100) & 0xFF == ord('q'):
 		break
 
