@@ -5,13 +5,10 @@ import cv2
 import time
 import os
 
-print(' __   ___       ___      \n'
-      '/__` |__  |    |__  |\\ |  /\\  \n'
-      '.__/ |___ |___ |___ | \\| /~~\\ \n')
+from pyimagesearch.centroidtracker import CentroidTracker
+from pyimagesearch.trackableobject import TrackableObject
 
-hog = cv2.HOGDescriptor()
-hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
-body_cascade = cv2.CascadeClassifier('/Users/georgelivas/PycharmProjects/humanDetection/haarcascade_fullbody.xml')
+net = cv2.dnn.readNetFromCaffe('/Users/georgelivas/PycharmProjects/humanDetection/mobilenet_ssd/MobileNetSSD_deploy.prototxt', '/Users/georgelivas/PycharmProjects/humanDetection/mobilenet_ssd/MobileNetSSD_deploy.caffemodel')
 
 cv2.startWindowThread()
 
@@ -27,64 +24,46 @@ out = cv2.VideoWriter(
 old_frame = None
 old_boxes = None
 
+ct = CentroidTracker(maxDisappeared=40, maxDistance=50)
+
+W = None
+H = None
+
 while True:
 	frame = cap.read()
 	frame = cv2.resize(frame, (640, 480))
 
 	diff = None
-	gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
+	rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-	bodies = body_cascade.detectMultiScale(gray, 1.1, 4)
-	# boxes, weights = hog.detectMultiScale(frame, winStride=(8, 8))
-	# boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
+	if W is None or H is None:
+		(H, W) = frame.shape[:2]
 
-	if 1: # old_frame is None or get_similarity(old_frame, frame) < 85:
+	blob = cv2.dnn.blobFromImage(frame, 0.007843, (W, H), 127.5)
+	net.setInput(blob)
+	detections = net.forward()
 
-		if old_frame is None:
-			old_frame = frame
+	# loop over the detections
+	for i in np.arange(0, detections.shape[2]):
+		# extract the confidence (i.e., probability) associated
+		# with the prediction
+		confidence = detections[0, 0, i, 2]
+
+		if confidence > 0.5:
+			# extract the index of the class label from the
+			# detections list
+			idx = int(detections[0, 0, i, 1])
+
+			# if the class label is not a person, ignore it
+			if 15 != idx:
+				continue
+
+			box = detections[0, 0, i, 3:7] * np.array([W, H, W, H])
+			(startX, startY, endX, endY) = box.astype("int")
+
+			cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
 
-		gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)
-		old_grey = cv2.cvtColor(old_frame, cv2.COLOR_RGB2GRAY)
-
-		diff = cv2.absdiff(frame, old_frame)
-
-		# faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-		# boxes, weights = hog.detectMultiScale(diff, winStride=(8, 8), scale=1.1)
-		# boxes = np.array([[x, y, x + w, y + h] for (x, y, w, h) in boxes])
-
-		for (x, y, w, h) in bodies:
-			cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
-
-		# for (xA, yA, xB, yB) in boxes:
-		# 	cropped = frame[yA:yB, xA + 10:xB - 10]
-
-			name = 'Unknown Person'
-
-			# for folder in os.listdir('dataset'):
-			# 	for photo in os.listdir('dataset/' + folder):
-			# 		print(folder + '/' + photo)
-			# 		if 0 < get_similarity(cropped, cv2.imread('dataset/' + folder + '/' + photo)):
-			# 			name = folder
-			# 			print(folder)
-
-			cv2.imwrite('./images/people/Image_' + str(time.time()) + '.jpg', frame)
-
-			cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-			# cv2.putText(frame, name, (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 255, 0), 2)
-			# cv2.putText(frame, 'Count: ' + str(boxes.size/4), (450, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.90, (255, 255, 255), 2)
-
-		old_frame = frame
-		# old_boxes = boxes
-	else:
-		for (xA, yA, xB, yB) in old_boxes:
-			cv2.rectangle(frame, (xA, yA), (xB, yB), (0, 255, 0), 2)
-			# cv2.putText(frame, 'Unknown Person', (xA, yA - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 0, 0), 2)
-	# cv2.putText(frame, 'Count: ' + str(old_boxes.size/4), (450, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.90, (255, 0, 0), 2)
-
-	out.write(frame.astype('uint8'))
-
-	cv2.imshow('dif', diff)
 	cv2.imshow('Selena', frame)
 	if cv2.waitKey(100) & 0xFF == ord('q'):
 		break
