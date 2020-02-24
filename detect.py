@@ -66,19 +66,20 @@ while True:
 
 			for existing_box in boxes:
 				(startX, startY, endX, endY) = existing_box
-				(X, Y, X1, Y1) = box.astype("int")
+				(X, Y, X1, Y1) = box.astype('int')
 
 				if startX < X < endX or startX < X1 < endX:
 					box_exists = True
 
 			if box_exists:
-				print('double box prevented')
+				print('Duplicate prevented')
 				continue
 
-			boxes.append(box.astype("int"))
+			boxes.append(box.astype('int'))
 
-			(startX, startY, endX, endY) = box.astype("int")
-			cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
+			(startX, startY, endX, endY) = box.astype('int')
+			# cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
+			cv2.circle(frame, (int((startX + endX)/2), startY-10), 4, (0, 255, 0), -1)
 
 	cv2.imshow('Pheebs', frame)
 	if cv2.waitKey(100) & 0xFF == ord('q'):
