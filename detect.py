@@ -28,7 +28,7 @@ out = cv2.VideoWriter(
 old_frame = None
 old_boxes = None
 
-ct = CentroidTracker(maxDisappeared=40, maxDistance=50)
+ct = CentroidTracker(maxDisappeared=60, maxDistance=100)
 
 W = None
 H = None
@@ -52,14 +52,13 @@ while True:
 
 	boxes = []
 	rects = []
+	trackers = []
 
 	# loop over the detections
 	for i in np.arange(0, detections.shape[2]):
 		# extract the confidence (i.e., probability) associated
 		# with the prediction
 		confidence = detections[0, 0, i, 2]
-
-		trackers = []
 
 		if confidence > 0.6:
 			# extract the index of the class label from the
@@ -94,6 +93,7 @@ while True:
 			tracker.start_track(rgb, rect)
 
 			trackers.append(tracker)
+			# cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
 	for tracker in trackers:
 		tracker.update(rgb)
@@ -113,11 +113,11 @@ while True:
 	for (objectID, centroid) in objects.items():
 		# check to see if a trackable object exists for the current
 		# object ID
-		# to = trackableObjects.get(objectID, None)
+		to = trackableObjects.get(objectID, None)
 
 		# if there is no existing trackable object, create one
-		# if to is None:
-		# to = TrackableObject(objectID, centroid)
+		if to is None:
+			to = TrackableObject(objectID, centroid)
 		#
 		# # store the trackable object in our dictionary
 		# trackableObjects[objectID] = to
@@ -126,6 +126,9 @@ while True:
 		# # cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 		# cv2.circle(frame, (int((startX + endX) / 2), startY - 10), 8, (0, 255, 0), -1)
 		#
+
+		trackableObjects[objectID] = to
+
 		text = "ID {}".format(objectID)
 		cv2.putText(frame, text, (centroid[0] - 10, int(centroid[1]/2) - 10),
 		            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
