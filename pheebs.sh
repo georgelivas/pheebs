@@ -31,4 +31,4 @@ sleep 0.02 && ${ECHO} ".JMML.    .JMML  JMML.\`Mbmmd'  \`Mbmmd' P^YbmdP'  M9mmmP
 
 ${ECHO} "$transparent "
 
-python3 recognize_video.py --detector face_detection_model --embedding-model openface_nn4.small2.v1.t7 --recognizer output/recognizer.pickle --le output/le.pickle
+python3 detect.py

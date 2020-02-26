@@ -1,14 +1,24 @@
 from imutils.video import VideoStream
-from get_similarity import get_similarity
+from imutils.video import FPS
+
 import numpy as np
 import cv2
 import dlib
 
-import time
-import os
-
 from pyimagesearch.centroidtracker import CentroidTracker
 from pyimagesearch.trackableobject import TrackableObject
+
+
+class colors:
+	HEADER = '\033[95m'
+	OKBLUE = '\033[94m'
+	OKGREEN = '\033[92m'
+	WARNING = '\033[93m'
+	FAIL = '\033[91m'
+	ENDC = '\033[0m'
+	BOLD = '\033[1m'
+	UNDERLINE = '\033[4m'
+
 
 net = cv2.dnn.readNetFromCaffe(
 	'/Users/georgelivas/PycharmProjects/humanDetection/mobilenet_ssd/MobileNetSSD_deploy.prototxt',
@@ -17,6 +27,10 @@ net = cv2.dnn.readNetFromCaffe(
 cv2.startWindowThread()
 
 cap = VideoStream('rtsp://admin:admin1@10.10.240.27:554/11').start()
+fps = FPS().start()
+totalFrames = 0
+
+print(f'[{colors.OKGREEN}info{colors.ENDC}] Camera Ready')
 
 # the output will be written to output.avi
 out = cv2.VideoWriter(
@@ -28,13 +42,18 @@ out = cv2.VideoWriter(
 old_frame = None
 old_boxes = None
 
-ct = CentroidTracker(maxDisappeared=60, maxDistance=100)
+ct = CentroidTracker(maxDisappeared=40, maxDistance=100)
 
 W = None
 H = None
 
 trackers = []
 trackableObjects = {}
+
+errors = 0
+
+print(f'[{colors.OKGREEN}info{colors.ENDC}] Window Open')
+print(f'[{colors.OKGREEN}info{colors.ENDC}] Starting Tracking...\n')
 
 while True:
 	frame = cap.read()
@@ -81,7 +100,7 @@ while True:
 					box_exists = True
 
 			if box_exists:
-				print('Duplicate prevented')
+				errors += 1
 				continue
 
 			boxes.append(box.astype('int'))
@@ -93,7 +112,7 @@ while True:
 			tracker.start_track(rgb, rect)
 
 			trackers.append(tracker)
-			# cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
+	# cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
 	for tracker in trackers:
 		tracker.update(rgb)
@@ -130,15 +149,43 @@ while True:
 		trackableObjects[objectID] = to
 
 		text = "ID {}".format(objectID)
-		cv2.putText(frame, text, (centroid[0] - 10, int(centroid[1]/2) - 10),
+		cv2.putText(frame, text, (centroid[0] - 10, int(centroid[1] / 2) - 10),
 		            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-		cv2.circle(frame, (centroid[0], int(centroid[1]/2)), 4, (0, 255, 0), -1)
+		cv2.circle(frame, (centroid[0], int(centroid[1] / 2)), 4, (0, 255, 0), -1)
+
+	# f'[{colors.OKGREEN}info{colors.ENDC}]
+	totalFrames += 1
+	fps.update()
+	fps.stop()
+
+	print(
+		f'\r[{colors.OKBLUE}stat{colors.ENDC}] People in frame: '
+		+ colors.WARNING
+		+ str(len(objects.items()))
+		+ colors.ENDC
+		+ '\t Errors Prevented: '
+		+ colors.FAIL
+		+ str(errors)
+		+ colors.ENDC
+		+ '\t FPS: '
+		+ colors.OKBLUE
+		+ '{:.2f}'.format(int(fps.fps()))
+		+ colors.ENDC
+		, sep=' ', end='', flush=True
+	)
+	fps.start()
+	# print('\r[stat] Errors Prevented: ' + str(errors), end='\r')
 
 	cv2.imshow('Pheebs', frame)
+
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
 
-cap.release()
+
+
+print(f'\n\n[{colors.OKGREEN}info{colors.ENDC}] Terminating...')
+
+fps.stop()
 out.release()
 
 cv2.destroyAllWindows()
