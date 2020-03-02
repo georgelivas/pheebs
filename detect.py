@@ -27,7 +27,7 @@ net = cv2.dnn.readNetFromCaffe(
 
 cv2.startWindowThread()
 
-cap = VideoStream('rtsp://admin:admin1@10.10.240.27:554/11').start()
+cap = VideoStream('rtsp://admin:admin1@10.10.240.43:554/11').start()
 fps = FPS().start()
 totalFrames = 0
 
