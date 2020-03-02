@@ -4,6 +4,7 @@ from imutils.video import FPS
 import numpy as np
 import cv2
 import dlib
+import random
 
 from pyimagesearch.centroidtracker import CentroidTracker
 from pyimagesearch.trackableobject import TrackableObject
@@ -47,6 +48,8 @@ ct = CentroidTracker(maxDisappeared=40, maxDistance=100)
 W = None
 H = None
 
+pathPoints = {}
+pathColors = {}
 trackers = []
 trackableObjects = {}
 
@@ -137,6 +140,8 @@ while True:
 		# if there is no existing trackable object, create one
 		if to is None:
 			to = TrackableObject(objectID, centroid)
+			pathPoints[objectID] = [[centroid[0], centroid[1]]]
+			pathColors[objectID] = (random.randint(20, 255), random.randint(0, 255), random.randint(30, 255))
 		#
 		# # store the trackable object in our dictionary
 		# trackableObjects[objectID] = to
@@ -145,8 +150,9 @@ while True:
 		# # cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 		# cv2.circle(frame, (int((startX + endX) / 2), startY - 10), 8, (0, 255, 0), -1)
 		#
-
 		trackableObjects[objectID] = to
+
+		pathPoints[objectID].append([centroid[0], centroid[1]])
 
 		text = "ID {}".format(objectID)
 		cv2.putText(frame, text, (centroid[0] - 10, int(centroid[1] / 2) - 10),
@@ -154,6 +160,14 @@ while True:
 		cv2.circle(frame, (centroid[0], int(centroid[1] / 2)), 4, (0, 255, 0), -1)
 
 	# f'[{colors.OKGREEN}info{colors.ENDC}]
+
+	for (objectID, points) in pathPoints.items():
+		cv2.polylines(frame, np.int32([np.array(points)]), False, pathColors[objectID], 2, lineType=cv2.LINE_AA)
+
+		# for coords in points:
+		# 	(x, y) = coords
+		# 	cv2.circle(frame, (int(x), int(y)), 2, pathColors[objectID], -1)
+
 	totalFrames += 1
 	fps.update()
 	fps.stop()
@@ -180,8 +194,6 @@ while True:
 
 	if cv2.waitKey(1) & 0xFF == ord('q'):
 		break
-
-
 
 print(f'\n\n[{colors.OKGREEN}info{colors.ENDC}] Terminating...')
 
