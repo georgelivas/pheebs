@@ -1,4 +1,4 @@
-# Selena
+# Pheebs
 Human detection with persistence.
 
-> Inspired in Ibiza.
+> Inspired in Mykonos.
