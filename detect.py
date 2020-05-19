@@ -22,12 +22,12 @@ class colors:
 
 
 net = cv2.dnn.readNetFromCaffe(
-	'/Users/georgelivas/PycharmProjects/humanDetection/mobilenet_ssd/MobileNetSSD_deploy.prototxt',
-	'/Users/georgelivas/PycharmProjects/humanDetection/mobilenet_ssd/MobileNetSSD_deploy.caffemodel')
+	'mobilenet_ssd/MobileNetSSD_deploy.prototxt',
+	'mobilenet_ssd/MobileNetSSD_deploy.caffemodel')
 
 cv2.startWindowThread()
 
-cap = VideoStream('rtsp://admin:admin1@10.10.240.43:554/11').start()
+cap = cv2.VideoCapture(0) #VideoStream('rtsp://admin:admin1@10.10.240.43:554/11').start()
 fps = FPS().start()
 totalFrames = 0
 
@@ -59,7 +59,7 @@ print(f'[{colors.OKGREEN}info{colors.ENDC}] Window Open')
 print(f'[{colors.OKGREEN}info{colors.ENDC}] Starting Tracking...\n')
 
 while True:
-	frame = cap.read()
+	_, frame = cap.read()
 	frame = cv2.resize(frame, (640, 480))
 
 	diff = None
@@ -143,7 +143,7 @@ while True:
 			pathPoints[objectID] = [[centroid[0], centroid[1]]]
 			pathColors[objectID] = (random.randint(20, 255), random.randint(0, 255), random.randint(30, 255))
 		#
-		# # store the trackable object in our dictionary
+		# # store the trackable object in the dictionary
 		# trackableObjects[objectID] = to
 
 		# (startX, startY, endX, endY) = box.astype('int')
