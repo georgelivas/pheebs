@@ -36,7 +36,7 @@ You should see a window with the feed from your camera and the following informa
 > The centroid tracking algorithm used in this project is based on  [Simple object tracking with OpenCV](https://www.pyimagesearch.com/2018/07/23/simple-object-tracking-with-opencv/) by Adrian Rosebrock
 
 ## Project Presentation
-The Project presentation is available on YouTube. [Watch now](https://www.youtube.com/watch?v=21ux48TsWIs)
+The Project presentation is available on YouTube. [Watch now](https://youtu.be/yvhgtIbe42I)
 
 ## Dependencies
 
