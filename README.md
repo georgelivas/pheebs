@@ -26,9 +26,10 @@ rtsp://<USERNAME>:<PASSWORD>@<IP_ADDRESS>:554/11
 ## Start Pheebs
 
 After completing the installation, in a terminal window navigate to the root of the project and run:
-```shell script
+```
 ~/$ ./pheebs.sh
 ``` 
+
 You should see a window with the feed from your camera and the following information in your terminal.
 ![](terminal.png)
 
